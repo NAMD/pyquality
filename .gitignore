@@ -1,0 +1,11 @@
+.*.sw?
+*.pyc
+*~
+/build/
+/bin/
+/dist/
+/include/
+/lib/
+/share/
+/repos/
+/results/
