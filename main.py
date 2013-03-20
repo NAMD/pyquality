@@ -19,7 +19,10 @@ def pep8(filename):
     with open(filename, 'r') as fp:
         contents = fp.read()
         number_of_lines = contents.count('\n')
-    number_of_pep8_errors = flake8.main.check_file(filename)
+    try:
+        number_of_pep8_errors = flake8.main.check_file(filename)
+    except Exception as exc:
+        return exc
 
     temp_file = sys.stdout
     sys.stdout = old_stdout
@@ -39,7 +42,17 @@ def pep8_dir(path):
         for file_ in fnmatch.filter(files, '*.py'):
             #TODO: what about python files that don't end in .py?
             full_path = os.path.join(root, file_)
-            results[full_path] = Pool(1).apply(pep8, (full_path, ))
+            result = Pool(1).apply(pep8, (full_path, ))
+
+            if isinstance(result, Exception):
+                import traceback
+                sys.stderr.write("Error while running flake8 for '{}'.\n".format(
+                    project))
+                sys.stderr.write("\t{}: {}\n".format(result.__class__.__name__,
+                    result.message))
+                return None
+
+            results[full_path] = result
     return results
 
 def summarize_results(results):
@@ -59,15 +72,10 @@ if __name__ == '__main__':
     for project in projects:
         print project
         new_path = os.path.join('repos/', project)
-        try:
-            plot_data = summarize_results(pep8_dir(new_path))
-        except Exception as exc:
-            import traceback
-            sys.stderr.write("Error while running flake8 for '{}'.\n".format(
-                project))
-            sys.stderr.write("\t{}: {}\n".format(exc.__class__.__name__,
-                exc.message))
+        results = pep8_dir(new_path)
+        if results is None:
             continue
+        plot_data = summarize_results(results)
 
         base_filename = os.path.basename(new_path)
         with open('results/{}.dat'.format(base_filename), 'w') as fp:
