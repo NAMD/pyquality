@@ -5,6 +5,7 @@ import glob
 import os
 import sys
 import tempfile
+from multiprocessing import Pool
 
 import flake8.main
 import numpy
@@ -38,7 +39,7 @@ def pep8_dir(path):
         for file_ in fnmatch.filter(files, '*.py'):
             #TODO: what about python files that don't end in .py?
             full_path = os.path.join(root, file_)
-            results[full_path] = pep8(full_path)
+            results[full_path] = Pool(1).apply(pep8, (full_path, ))
     return results
 
 def summarize_results(results):
@@ -58,7 +59,16 @@ if __name__ == '__main__':
     for project in projects:
         print project
         new_path = os.path.join('repos/', project)
-        plot_data = summarize_results(pep8_dir(new_path))
+        try:
+            plot_data = summarize_results(pep8_dir(new_path))
+        except Exception as exc:
+            import traceback
+            sys.stderr.write("Error while running flake8 for '{}'.\n".format(
+                project))
+            sys.stderr.write("\t{}: {}\n".format(exc.__class__.__name__,
+                exc.message))
+            continue
+
         base_filename = os.path.basename(new_path)
         with open('results/{}.dat'.format(base_filename), 'w') as fp:
             for line in plot_data:
