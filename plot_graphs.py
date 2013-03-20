@@ -2,6 +2,9 @@ import glob
 import os
 import sys
 
+import matplotlib
+matplotlib.use("Agg")
+
 from matplotlib.pyplot import figure
 import numpy
 
