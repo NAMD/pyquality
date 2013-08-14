@@ -6,9 +6,19 @@ import os
 import sys
 import tempfile
 from multiprocessing import Pool
+import subprocess
 
 import flake8.main
 import numpy
+
+def git_tag_list(repo_path):
+    return subprocess.check_output("git tag -l".split(), cwd=repo_path).splitlines()
+
+def git_checkout(repo_path, rev):
+    return subprocess.call(["git", "checkout", rev], cwd=repo_path)
+
+def git_reset_head(repo_path):
+    return subprocess.call("git reset --hard".split(), cwd=repo_path)
 
 
 def pep8(filename):
@@ -66,19 +76,29 @@ def summarize_results(results):
         ratios.append(ratio)
     return ratios
 
-
-if __name__ == '__main__':
-
-    projects = map(lambda x: x.split('/')[1], glob.glob('repos/*'))
+def analyse(projects):
     for project in projects:
         print project
-        new_path = os.path.join('repos/', project)
-        results = pep8_dir(new_path)
-        if results is None:
-            continue
-        plot_data = summarize_results(results)
+        repo_path = os.path.abspath(os.path.join(os.path.curdir, 'repos/',
+            project))
+        tags = git_tag_list(repo_path)
+        for tag in tags:
+            print project, tag
+            git_checkout(repo_path, tag)
+            git_reset_head(repo_path)
+            results = pep8_dir(repo_path)
+            if results is None:
+                continue
+            plot_data = summarize_results(results)
 
-        base_filename = os.path.basename(new_path)
-        with open('results/{}.dat'.format(base_filename), 'w') as fp:
-            for line in plot_data:
-                fp.write('{}\n'.format(line))
+            base_filename = '{}-{}'.format(os.path.basename(repo_path),
+                tag)
+            results_filename = os.path.join(base_dir,
+                'results/{}.dat'.format(base_filename))
+            with open(results_filename, 'w') as fp:
+                for line in plot_data:
+                    fp.write('{}\n'.format(line))
+
+if __name__ == '__main__':
+    projects = map(lambda x: x.split('/')[1], glob.glob('repos/*'))
+    analyse(projects)
