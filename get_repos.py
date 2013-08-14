@@ -16,7 +16,9 @@ params = {"sort": "stars"}
 
 
 projects = []
-for page in range(1, 6):
+# Each page returns 100 results. I don't think we need more than this for now,
+# but I'll leave the code ready to download more than that.
+for page in range(1, 2):
     print("getting page {}".format(page))
     params['start_page'] = page
     response = requests.get(search_url.format(query), params=params)
@@ -29,7 +31,6 @@ for page in range(1, 6):
 pprint.pprint(projects)
 print(len(projects))
 
-base_repo_url = "https://github.com"
 for project, project_url in projects:
     directory = os.path.join("repos", project)
     subprocess.call(['git', 'clone', project_url, directory])
