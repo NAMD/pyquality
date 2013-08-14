@@ -1,33 +1,35 @@
 import requests
-from bs4 import BeautifulSoup
 import pprint
 import subprocess
 import os
-#search_url = "https://api.github.com/legacy/repos/search/language:python"
-#
-#response = requests.get(search_url)
-#for repo in response.json()['repositories']:
-#    print(repo['owner'], repo['name'])
+
+# We're using the legacy search api
+# (http://developer.github.com/v3/search/legacy/), maybe we should use the
+# preview of the new api
+# (http://developer.github.com/changes/2013-07-19-preview-the-new-search-api/
+# https://gist.github.com/jasonrudolph/6065289)
+search_url = "https://api.github.com/legacy/repos/search/{}"
+
+query = "language:python"
+
+params = {"sort": "stars"}
+
 
 projects = []
-
-most_watched_url = "https://github.com/languages/Python/most_watched?page={}"
 for page in range(1, 6):
     print("getting page {}".format(page))
-    response = requests.get(most_watched_url.format(page))
+    params['start_page'] = page
+    response = requests.get(search_url.format(query), params=params)
 
-    soup = BeautifulSoup(response.content)
-    for project in soup.find_all('h3'):
-        project_name = project.a.text
-        project_url = project.a.attrs['href']
+    for repo in response.json()['repositories']:
+        project_name = repo["name"]
+        project_url = repo["url"]
         projects.append((project_name, project_url))
-
 
 pprint.pprint(projects)
 print(len(projects))
 
 base_repo_url = "https://github.com"
 for project, project_url in projects:
-    url = base_repo_url + project_url
     directory = os.path.join("repos", project)
-    subprocess.call(['git', 'clone', url, directory])
+    subprocess.call(['git', 'clone', project_url, directory])
