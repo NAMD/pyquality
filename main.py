@@ -20,6 +20,10 @@ def git_checkout(repo_path, rev):
 def git_reset_head(repo_path):
     return subprocess.call("git reset --hard".split(), cwd=repo_path)
 
+def git_current_branch(repo_path):
+    return subprocess.check_output("git rev-parse --abbrev-ref "
+            "HEAD".split(), cwd=repo_path).strip()
+
 
 def pep8(filename):
     old_stdout = sys.stdout
@@ -81,7 +85,7 @@ def analyse(projects):
         print project
         repo_path = os.path.abspath(os.path.join(os.path.curdir, 'repos/',
             project))
-        tags = git_tag_list(repo_path)
+        tags = [git_current_branch(repo_path)] + git_tag_list(repo_path)
         for tag in tags:
             print project, tag
             git_checkout(repo_path, tag)
