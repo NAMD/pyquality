@@ -96,7 +96,7 @@ def analyse(projects):
             plot_data = summarize_results(results)
 
             base_filename = '{}-{}'.format(os.path.basename(repo_path),
-                tag)
+                tag.replace('/','_'))
             results_filename = os.path.join(os.path.curdir,
                 'results/{}.dat'.format(base_filename))
             with open(results_filename, 'w') as fp:
