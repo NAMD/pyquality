@@ -62,7 +62,7 @@ def pep8_dir(path):
             if isinstance(result, Exception):
                 import traceback
                 sys.stderr.write("Error while running flake8 for '{}'.\n".format(
-                    project))
+                    full_path))
                 sys.stderr.write("\t{}: {}\n".format(result.__class__.__name__,
                     result.message))
                 return None
