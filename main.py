@@ -115,6 +115,8 @@ def analyse(projects):
                 fp.write('authors={}\n'.format(authors))
                 fp.write('commits={}\n'.format(commits))
 
+        git_checkout(repo_path, tags[0]) # returns to the branch we found the repo in
+
 if __name__ == '__main__':
     projects = map(lambda x: x.split('/')[1], glob.glob('repos/*'))
     analyse(projects)
