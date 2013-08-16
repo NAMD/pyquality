@@ -93,6 +93,7 @@ def analyse(projects):
         repo_path = os.path.abspath(os.path.join(os.path.curdir, 'repos/',
             project))
         tags = [git_current_branch(repo_path)] + git_tag_list(repo_path)
+        subprocess.call(["mkdir", "-p", "results/{}".format(project)])
         for tag in tags:
             print project, tag
             git_checkout(repo_path, tag)
@@ -107,7 +108,7 @@ def analyse(projects):
             base_filename = '{}-{}'.format(os.path.basename(repo_path),
                 tag.replace('/','_'))
             results_filename = os.path.join(os.path.curdir,
-                'results/{}.dat'.format(base_filename))
+                'results/{}/{}.dat'.format(project, base_filename))
             with open(results_filename, 'w') as fp:
                 for line in plot_data:
                     fp.write('{}\n'.format(line))
