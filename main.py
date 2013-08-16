@@ -24,6 +24,13 @@ def git_current_branch(repo_path):
     return subprocess.check_output("git rev-parse --abbrev-ref "
             "HEAD".split(), cwd=repo_path).strip()
 
+def git_count_authors(repo_path):
+    return len(subprocess.check_output("git shortlog -s -n".split(),
+        cwd=repo_path).splitlines())
+
+def git_count_commits(repo_path):
+    return int(subprocess.check_output("git rev-list HEAD --count".split(),
+        cwd=repo_path).strip())
 
 def pep8(filename):
     old_stdout = sys.stdout
@@ -94,6 +101,8 @@ def analyse(projects):
             if results is None:
                 continue
             plot_data = summarize_results(results)
+            authors = git_count_authors(repo_path)
+            commits = git_count_commits(repo_path)
 
             base_filename = '{}-{}'.format(os.path.basename(repo_path),
                 tag.replace('/','_'))
@@ -102,6 +111,8 @@ def analyse(projects):
             with open(results_filename, 'w') as fp:
                 for line in plot_data:
                     fp.write('{}\n'.format(line))
+                fp.write('authors={}\n'.format(authors))
+                fp.write('commits={}\n'.format(commits))
 
 if __name__ == '__main__':
     projects = map(lambda x: x.split('/')[1], glob.glob('repos/*'))
