@@ -32,6 +32,10 @@ def git_count_commits(repo_path):
     return int(subprocess.check_output("git rev-list HEAD --count".split(),
         cwd=repo_path).strip())
 
+def git_last_commit_date(repo_path):
+    return subprocess.check_output('git log -1 --format="%ad"'.split(),
+        cwd=repo_path).strip()
+
 def pep8(filename):
     old_stdout = sys.stdout
     temp_file = tempfile.NamedTemporaryFile()
@@ -104,16 +108,22 @@ def analyse(projects):
             plot_data = summarize_results(results)
             authors = git_count_authors(repo_path)
             commits = git_count_commits(repo_path)
+            commit_date = git_last_commit_date(repo_path)
 
             base_filename = '{}-{}'.format(os.path.basename(repo_path),
                 tag.replace('/','_'))
             results_filename = os.path.join(os.path.curdir,
                 'results/{}/{}.dat'.format(project, base_filename))
+            metadata_filename = os.path.join(os.path.curdir,
+                'results/{}/{}.metadata'.format(project, base_filename))
+
             with open(results_filename, 'w') as fp:
                 for line in plot_data:
                     fp.write('{}\n'.format(line))
-                fp.write('authors={}\n'.format(authors))
-                fp.write('commits={}\n'.format(commits))
+
+            with open(metadata_filename, 'w') as fp:
+                fp.write('{};{};{}'.format(commit_date, authors, commits))
+
 
         git_checkout(repo_path, tags[0]) # returns to the branch we found the repo in
 
