@@ -44,20 +44,24 @@ def pep8(filename):
     with open(filename, 'r') as fp:
         contents = fp.read()
         number_of_lines = contents.count('\n')
+
     try:
         number_of_pep8_errors = flake8.main.check_file(filename)
+
+        temp_file.seek(0)
+
+        line_numbers = set()
+        errors = temp_file.readlines()
+        for error in errors:
+            line_number = error.split(':')[1]
+            line_numbers.add(line_number)
+
     except Exception as exc:
         return exc
 
-    temp_file = sys.stdout
-    sys.stdout = old_stdout
-    temp_file.seek(0)
-
-    line_numbers = set()
-    for error in temp_file.readlines():
-        line_number = error.split(':')[1]
-        line_numbers.add(line_number)
-    temp_file.close()
+    finally:
+        sys.stdout = old_stdout
+        temp_file.close()
 
     return number_of_lines, len(line_numbers), number_of_pep8_errors
 
