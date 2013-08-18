@@ -3,9 +3,9 @@ import os
 import sys
 
 import matplotlib
-#matplotlib.use("Agg")
+matplotlib.use("Agg")
 
-from matplotlib.pyplot import figure
+from matplotlib.pyplot import close, figure
 import numpy
 
 data_files = glob.glob('results/*/*.dat')
@@ -45,3 +45,4 @@ for data_file in data_files:
         os.mkdir(graphs_dir)
 
     fig.savefig('{}/{}.png'.format(graphs_dir, base_filename))
+    close(fig)
