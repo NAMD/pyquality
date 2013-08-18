@@ -5,7 +5,6 @@ import glob
 import os
 import sys
 import tempfile
-from multiprocessing import Pool
 import subprocess
 
 import flake8.main
@@ -67,12 +66,11 @@ def pep8(filename):
 
 def pep8_dir(path):
     results = {}
-    process_pool = Pool(1)
     for root, dirs, files in os.walk(path):
         for file_ in fnmatch.filter(files, '*.py'):
             #TODO: what about python files that don't end in .py?
             full_path = os.path.join(root, file_)
-            result = process_pool.apply(pep8, (full_path, ))
+            result = pep8(full_path)
 
             if isinstance(result, Exception):
                 import traceback
