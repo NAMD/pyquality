@@ -124,7 +124,7 @@ def analyse(projects):
                     fp.write('{}\n'.format(line))
 
             with open(metadata_filename, 'w') as fp:
-                fp.write('{};{};{}'.format(commit_date, authors, commits))
+                fp.write('{};{};{};{}'.format(tag, commit_date, authors, commits))
 
 
         git_checkout(repo_path, tags[0]) # returns to the branch we found the repo in
