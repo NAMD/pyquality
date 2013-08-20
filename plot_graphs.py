@@ -40,7 +40,7 @@ for data_file in data_files:
     subplot.set_ylabel('# of Files')
     subplot.set_xlabel('Warnings/LOC')
 
-    graphs_dir = 'results/graphs/{}'.format(project)
+    graphs_dir = 'results/{}'.format(project)
 
     if not os.path.exists(graphs_dir):
         os.mkdir(graphs_dir)
