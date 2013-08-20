@@ -35,8 +35,8 @@ for data_file in data_files:
 
     subplot.hist(hist_data, bins=numpy.arange(0.00, 1.01, 0.05))
     subplot.set_ylim(0, 500)
-    fig.suptitle('{} - {}'.format(project, tag_name))
-    subplot.set_ylabel('Files')
+    fig.suptitle('{} - {}'.format(project, tag_name), fontsize=32)
+    subplot.set_ylabel('# of Files')
     subplot.set_xlabel('Warnings/LOC')
 
     graphs_dir = 'results/graphs/{}'.format(project)
