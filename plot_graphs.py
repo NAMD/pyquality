@@ -37,6 +37,8 @@ for data_file in data_files:
     subplot.set_ylim(0, 500)
     subplot.set_xlim(0, 1)
     fig.suptitle('{} - {}'.format(project, tag_name), fontsize=32)
+    fig.text(0.6, 0.7, "{} authors\n{} commits".format(authors, commits),
+            fontsize=24, bbox={'boxstyle': 'round', 'facecolor': 'white'})
     subplot.set_ylabel('# of Files')
     subplot.set_xlabel('Warnings/LOC')
 
