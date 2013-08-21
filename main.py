@@ -3,12 +3,14 @@
 import fnmatch
 import glob
 import os
+import shutil
+import subprocess
 import sys
 import tempfile
-import subprocess
 
 import flake8.main
 import numpy
+
 
 def git_tag_list(repo_path):
     return subprocess.check_output("git tag -l".split(), cwd=repo_path).splitlines()
@@ -99,7 +101,15 @@ def analyse(projects):
         repo_path = os.path.abspath(os.path.join(os.path.curdir, 'repos/',
             project))
         tags = [git_current_branch(repo_path)] + git_tag_list(repo_path)
-        subprocess.call(["mkdir", "-p", "results/{}".format(project)])
+
+        results_path = os.path.join('results', project)
+        try:
+            shutil.rmtree(results_path)
+        except OSError:
+            pass
+        finally:
+            os.mkdir(results_path)
+
         for tag in tags:
             print project, tag
             git_checkout(repo_path, tag)
