@@ -5,11 +5,25 @@ import glob
 import os
 
 from strobo import SlideShow
+import dateutil.parser
 
 
 def get_image_names(directory):
-    images = glob.glob(os.path.join(directory, '*.png'))
-    return sorted(images)
+    metadata_files = glob.glob(os.path.join(directory, '*.metadata'))
+    taglist = []
+    for metadata_file in metadata_files:
+        with open(metadata_file, 'r') as fp:
+            tag_name, tag_date, _, _ = fp.read().strip().split(';')
+        tag_date = dateutil.parser.parse(tag_date.replace('"', ''))
+        taglist.append((tag_name, tag_date))
+
+    taglist.sort(key=lambda x: x[1])
+
+    project = directory.split(os.path.sep)[-1]
+    images = [os.path.join(directory, '{}-{}.png'.format(project, tag[0])) for tag
+        in taglist]
+
+    return images
 
 
 def render_project_history(project_name):
