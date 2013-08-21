@@ -1,3 +1,4 @@
+import dateutil.parser
 import glob
 import os
 import sys
@@ -27,6 +28,7 @@ for data_file in data_files:
     with open(metadata_file, 'r') as fp:
         metadata = fp.read().split(';')
         tag_name, date = metadata[:2]
+        date = dateutil.parser.parse(date.replace('"', ''))
         authors, commits = map(int, metadata[2:])
 
     if not hist_data:
@@ -36,7 +38,8 @@ for data_file in data_files:
     subplot.hist(hist_data, bins=numpy.arange(0.00, 1.01, 0.05))
     subplot.set_ylim(0, 500)
     subplot.set_xlim(0, 1)
-    fig.suptitle('{} - {}'.format(project, tag_name), fontsize=32)
+    fig.suptitle('{} - {} ({})'.format(project, tag_name,
+        date.strftime('%Y-%m-%d')), fontsize=32)
     fig.text(0.6, 0.7, "{:06d} authors\n{:06d} commits".format(authors, commits),
             fontsize=24, bbox={'boxstyle': 'round', 'facecolor': 'white'})
     subplot.set_ylabel('# of Files')
