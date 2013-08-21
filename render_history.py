@@ -13,7 +13,8 @@ def get_image_names(directory):
 
 
 def render_project_history(project_name):
-    slides = SlideShow(delay=0.75, size=(1600, 900), fade_in=0.5, fade_out=0.5)
+    slides = SlideShow(delay=0.075, size=(1600, 900), fade_in=0.05,
+            fade_out=0.05)
     slides.add_images(*get_image_names(project_name))
     slides.create_images()
     slides.render(os.path.join(project_name,
