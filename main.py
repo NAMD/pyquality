@@ -86,13 +86,13 @@ def pep8_dir(path):
     return results
 
 def summarize_results(results):
-    ratios = []
+    ratios = {}
     for filename, result in results.items():
         number_of_lines, number_of_lines_with_errors, number_of_pep8_errors = result
         if number_of_lines == 0:
             continue
         ratio = float(number_of_lines_with_errors) / number_of_lines
-        ratios.append(ratio)
+        ratios[filename] = ratio
     return ratios
 
 def analyse(projects):
@@ -124,18 +124,24 @@ def analyse(projects):
 
             base_filename = '{}-{}'.format(os.path.basename(repo_path),
                 tag.replace('/','_'))
-            results_filename = os.path.join(os.path.curdir,
-                'results/{}/{}.dat'.format(project, base_filename))
-            metadata_filename = os.path.join(os.path.curdir,
-                'results/{}/{}.metadata'.format(project, base_filename))
+            base_path = os.path.join(os.path.curdir,
+                    'results/{}/{}'.format(project, base_filename))
+            results_filename = base_path + '.dat'
+            metadata_filename = base_path + '.metadata'
+            ratios_filename = base_path + '.ratios'
 
             with open(results_filename, 'w') as fp:
-                for line in plot_data:
+                for line in plot_data.values():
                     fp.write('{}\n'.format(line))
 
             with open(metadata_filename, 'w') as fp:
                 fp.write('{};{};{};{}'.format(tag, commit_date, authors, commits))
 
+            len_repo_path = len(repo_path) + len(os.path.sep)
+            with open(ratios_filename, 'w') as fp:
+                for filename, ratio in plot_data.iteritems():
+                    relative_filename = filename[len_repo_path:]
+                    fp.write('{};{}\n'.format(relative_filename, ratio))
 
         git_checkout(repo_path, tags[0]) # returns to the branch we found the repo in
 
