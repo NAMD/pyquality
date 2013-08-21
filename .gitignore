@@ -1,6 +1,7 @@
 .*.sw?
 *.pyc
 *~
+.env
 /build/
 /bin/
 /dist/
