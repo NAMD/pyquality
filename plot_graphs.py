@@ -1,3 +1,4 @@
+import dateutil.parser
 import glob
 import os
 import sys
@@ -5,8 +6,10 @@ import sys
 import matplotlib
 matplotlib.use("Agg")
 
-from matplotlib.pyplot import close, figure
+from matplotlib.pyplot import close, figure, xkcd
 import numpy
+
+xkcd()
 
 data_files = glob.glob('results/*/*.dat')
 width = 1280
@@ -27,6 +30,7 @@ for data_file in data_files:
     with open(metadata_file, 'r') as fp:
         metadata = fp.read().split(';')
         tag_name, date = metadata[:2]
+        date = dateutil.parser.parse(date.replace('"', ''))
         authors, commits = map(int, metadata[2:])
 
     if not hist_data:
@@ -35,11 +39,15 @@ for data_file in data_files:
 
     subplot.hist(hist_data, bins=numpy.arange(0.00, 1.01, 0.05))
     subplot.set_ylim(0, 500)
-    fig.suptitle('{} - {}'.format(project, tag_name))
-    subplot.set_ylabel('Files')
-    subplot.set_xlabel('Warnings/LOC')
+    subplot.set_xlim(0, 1)
+    fig.suptitle('{} - {} ({})'.format(project, tag_name,
+        date.strftime('%Y-%m-%d')), fontsize=32)
+    fig.text(0.6, 0.7, "{:06d} authors\n{:06d} commits".format(authors, commits),
+            fontsize=24, bbox={'boxstyle': 'round', 'facecolor': 'white'})
+    subplot.set_ylabel('# of Files', fontsize=24)
+    subplot.set_xlabel('Warnings/LOC', fontsize=24)
 
-    graphs_dir = 'results/graphs/{}'.format(project)
+    graphs_dir = 'results/{}'.format(project)
 
     if not os.path.exists(graphs_dir):
         os.mkdir(graphs_dir)

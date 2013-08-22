@@ -2,4 +2,5 @@ flake8
 numpy
 requests
 matplotlib
+strobo
 jinja2
