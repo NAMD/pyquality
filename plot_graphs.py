@@ -6,8 +6,10 @@ import sys
 import matplotlib
 matplotlib.use("Agg")
 
-from matplotlib.pyplot import close, figure
+from matplotlib.pyplot import close, figure, xkcd
 import numpy
+
+xkcd()
 
 data_files = glob.glob('results/*/*.dat')
 width = 1280
@@ -42,8 +44,8 @@ for data_file in data_files:
         date.strftime('%Y-%m-%d')), fontsize=32)
     fig.text(0.6, 0.7, "{:06d} authors\n{:06d} commits".format(authors, commits),
             fontsize=24, bbox={'boxstyle': 'round', 'facecolor': 'white'})
-    subplot.set_ylabel('# of Files')
-    subplot.set_xlabel('Warnings/LOC')
+    subplot.set_ylabel('# of Files', fontsize=24)
+    subplot.set_xlabel('Warnings/LOC', fontsize=24)
 
     graphs_dir = 'results/{}'.format(project)
 
