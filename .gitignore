@@ -2,6 +2,7 @@
 *.pyc
 *~
 .env
+reg_settings.py*
 /build/
 /bin/
 /dist/
