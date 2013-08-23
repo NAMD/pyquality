@@ -1,47 +1,45 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import datetime
+import csv
+import dateutil.parser
 import glob
 import os
 
 from jinja2 import Template
 
 
-def convert_date(date_as_string):
-    date_format = '%a %b %d %H:%M:%S %Y'
-    base_time = datetime.datetime.strptime(date_as_string[1:-7], date_format)
-    signal = date_as_string[-6:-5]
-    hours = int(date_as_string[-5:-3])
-    minutes = int(date_as_string[-3:-1])
-    delta = datetime.timedelta((hours * 3600 + minutes * 60) / (24.0 * 3600))
-    if signal == '+':
-        delta = - delta
-    return base_time + delta
-
-
 def get_project_variables(project_path):
     ''' Given a project name, return a dict with its variables '''
     variables = {}
-    project_name = os.path.split(project_path)[-1]
+    project_name = os.path.basename(project_path)
     variables['project_name'] = project_name
 
-    tags = []
-    for filename in glob.glob(os.path.join(project_path, '*.metadata')):
-        with open(filename) as fp:
-            data = fp.read().split(';')
-        graph_filename = '{}-{}.png'.format(project_name, data[0])
-        tags.append({'name': data[0], 'date': convert_date(data[1]),
-                     'graph_filename': graph_filename})
-    tags.sort(lambda a, b: cmp(b['date'], a['date']))
+    tags_name = os.path.join(project_path, '{}-tags.csv'.format(project_name))
+    with open(tags_name) as fp:
+        tags_data = list(csv.reader(fp))
+    headers = tags_data[0]
+    name_index = headers.index('tag_name')
+    date_index = headers.index('date')
+    tags = [{'date': row[date_index], 'name': row[name_index],
+             'graph_filename': '{}-{}.png'.format(project_name, row[name_index])}
+            for row in tags_data[1:]]
+    tags.sort(key=lambda x: x['date'], reverse=True)
     variables['tags'] = tags
 
-    variables['best_files'] = ({'filename': 'test', 'ratio': 3.14}) # TODO
-    variables['worst_files'] = ({'filename': 'test', 'ratio': 3.14}) # TODO
-
-    #TODO: number of lines (ok/error/total)
-    #TODO: total table
-
+    ratio_filename = os.path.join(project_path,
+            '{}-pep8-{}.csv'.format(project_name, tags[0]['name']))
+    with open(ratio_filename) as fp:
+        file_ratio_data = list(csv.reader(fp))
+    headers = file_ratio_data[0]
+    ratios = file_ratio_data[1:]
+    ratios.sort(key=lambda x: x[headers.index('ratio')])
+    ratios = [dict(zip(headers, row)) for row in ratios]
+    variables['best_files_tag'] = tag[0]['name']
+    variables['worst_files_tag'] = tag[0]['name']
+    variables['best_files'] = ratios[:10]
+    variables['worst_files'] = ratios[-10:]
+    variables['ratios'] = ratios
     variables['video_filename'] = '{}-history.ogv'.format(project_name)
 
     return variables

@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+import csv
 import dateutil.parser
 import glob
 import os
@@ -11,46 +15,50 @@ import numpy
 
 xkcd()
 
-data_files = glob.glob('results/*/*.dat')
-width = 1280
-height = 720
-DPI = 80
-for data_file in data_files:
-    results_dir, project, filename = data_file.split('/')
-    base_filename = filename.rsplit('.', 1)[0]
-    metadata_file = os.path.join(results_dir, project,
-        '{}.metadata'.format(base_filename))
+def main():
+    projects = glob.glob(os.path.join('results', '*'))
+    width = 1280
+    height = 720
+    DPI = 80
+    for project in projects:
+        project_name = os.path.basename(project)
+        tags_name = os.path.join(project, '{}-tags.csv'.format(project_name))
+        with open(tags_name) as fp:
+            tags = list(csv.reader(fp))[1:]
 
-    fig = figure(figsize=(width / DPI, height / DPI), dpi=DPI)
-    subplot = fig.add_subplot(111)
-    with open(data_file, 'r') as fp:
-        lines = fp.readlines()
-    hist_data = [float(line.strip()) for line in lines]
+        for tag_name, date, authors, commits in tags:
+            fig = figure(figsize=(width / DPI, height / DPI), dpi=DPI)
 
-    with open(metadata_file, 'r') as fp:
-        metadata = fp.read().split(';')
-        tag_name, date = metadata[:2]
-        date = dateutil.parser.parse(date.replace('"', ''))
-        authors, commits = map(int, metadata[2:])
+            ratios_filename = os.path.join(project,
+                    '{}-pep8-{}.csv'.format(project_name, tag_name))
+            with open(ratios_filename, 'r') as fp:
+                ratio_data = list(csv.reader(fp))
+                headers = ratio_data[0]
+                ratio_index = headers.index('ratio')
+                ratios = [float(row[ratio_index]) for row in ratio_data[1:]]
+            if not ratios:
+                sys.stderr.write("File {} had no data.\n".format(data_file))
+                continue
 
-    if not hist_data:
-        sys.stderr.write("File {} had no data.\n".format(data_file))
-        continue
+            subplot = fig.add_subplot(111)
+            subplot.hist(ratios, bins=numpy.arange(0.00, 1.01, 0.05))
+            subplot.set_ylim(0, 500)
+            subplot.set_xlim(0, 1)
+            title = '{} - {} ({})'.format(project_name, tag_name,
+                    date.split(' ')[0])
+            authors_commits = "{:06d} authors\n{:06d} commits"\
+                    .format(int(authors), int(commits))
+            fig.suptitle(title, fontsize=32)
+            fig.text(0.6, 0.7, authors_commits, fontsize=24,
+                     bbox={'boxstyle': 'round', 'facecolor': 'white'})
+            subplot.set_ylabel('# of Files', fontsize=24)
+            subplot.set_xlabel('Warnings/LOC', fontsize=24)
 
-    subplot.hist(hist_data, bins=numpy.arange(0.00, 1.01, 0.05))
-    subplot.set_ylim(0, 500)
-    subplot.set_xlim(0, 1)
-    fig.suptitle('{} - {} ({})'.format(project, tag_name,
-        date.strftime('%Y-%m-%d')), fontsize=32)
-    fig.text(0.6, 0.7, "{:06d} authors\n{:06d} commits".format(authors, commits),
-            fontsize=24, bbox={'boxstyle': 'round', 'facecolor': 'white'})
-    subplot.set_ylabel('# of Files', fontsize=24)
-    subplot.set_xlabel('Warnings/LOC', fontsize=24)
+            graph_filename = os.path.join(project,
+                    '{}-{}.png'.format(project_name, tag_name))
+            fig.savefig(graph_filename)
+            close(fig)
 
-    graphs_dir = 'results/{}'.format(project)
 
-    if not os.path.exists(graphs_dir):
-        os.mkdir(graphs_dir)
-
-    fig.savefig('{}/{}.png'.format(graphs_dir, base_filename))
-    close(fig)
+if __name__ == '__main__':
+    main()
