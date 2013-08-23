@@ -54,14 +54,14 @@ def render_report(template_filename, variables):
 
 
 def main():
-    template_filename = 'report-template.markdown'
+    template_filename = 'report-template.html'
     for project_path in glob.glob('results/*'):
         print('Rendering report for {}...'.format(project_path))
         project_name = os.path.split(project_path)[-1]
         project_variables = get_project_variables(project_path)
         result = render_report(template_filename, project_variables)
         report_filename = os.path.join(project_path,
-                project_name + '-report.markdown')
+                project_name + '-report.html')
         with open(report_filename, 'w') as fp:
             fp.write(result)
 
