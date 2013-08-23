@@ -10,8 +10,18 @@
             list-style: none;
         }
 
+        table {
+            border-collapse: collapse;
+        }
+
         th {
             padding: 10px;
+        }
+
+        th, td {
+            border: 1px solid #CCC;
+            text-align: center;
+            padding: 1em;
         }
 
     </style>
@@ -42,22 +52,22 @@
 
     <h2><a name="section-top10best">Top 10 best files</a></h2>
 
-    TODO
-    <ul>
-    {% for file in best_files %}
-      <li> {{ file.filename }}, {{ file.ratio }} </li>
-    {% endfor %}
-    </ul>
+    <table>
+      <tr><th>Filename</th><th>Total lines</th><th>Lines with warnings</th><th>% of lines with warnings</th></tr>
+      {% for file in best_files %}
+      <tr><td>{{ file.filename }}</td><td>{{ file.total_lines}}</td><td>{{ file.lines_with_errors }}</td><td>{{ '%0.2f'|format(file.ratio|float * 100) }}</tr>
+      {% endfor %}
+    </table>
 
 
     <h2><a name="section-top10worst">Top 10 worst files</a></h2>
 
-    TODO
-    <ul>
-    {% for file in worst_files %}
-      <li> {{ file.filename }}, {{ file.ratio }} </li>
-    {% endfor %}
-    </ul>
+    <table>
+      <tr><th>Filename</th><th>Total lines</th><th>Lines with warnings</th><th>% of lines with warnings</th></tr>
+      {% for file in worst_files %}
+      <tr><td>{{ file.filename }}</td><td>{{ file.total_lines}}</td><td>{{ file.lines_with_errors }}</td><td>{{ '%0.2f'|format(file.ratio|float * 100) }}</tr>
+      {% endfor %}
+    </table>
 
 
     <h2><a name="section-tags">Git Tags</a></h2>
@@ -89,6 +99,12 @@
 
 
     <h2><a name="section-ratioperfile">Ratio per file</a></h2>
-    TODO
+
+    <table>
+      <tr><th>Filename</th><th>Total lines</th><th>Lines with warnings</th><th>% of lines with warnings</th></tr>
+      {% for file in ratios|reverse %}
+      <tr><td>{{ file.filename }}</td><td>{{ file.total_lines}}</td><td>{{ file.lines_with_errors }}</td><td>{{ '%0.2f'|format(file.ratio|float * 100) }}</tr>
+      {% endfor %}
+    </table>
   </body>
 </html>

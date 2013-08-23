@@ -125,7 +125,6 @@ def analyse(projects):
                                      '{}-tags.csv'.format(project))
         tags_info_csv = csv.writer(open(tags_filename, 'w'))
         tags_info_csv.writerow(('tag_name', 'date', 'authors', 'commits'))
-        tags = ['master', 'v1.7.1rc1', 'v0.6.1']
         for tag in tags:
             print project, tag
             git_checkout(repo_path, tag)
