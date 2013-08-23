@@ -1,4 +1,6 @@
-<html>
+# coding: utf-8
+
+default_template = u'''<html>
   <head>
     <style>
         body {
@@ -107,4 +109,4 @@
       {% endfor %}
     </table>
   </body>
-</html>
+</html>'''
