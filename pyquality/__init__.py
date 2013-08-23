@@ -2,6 +2,8 @@
 
 '''Rich reports for Python code quality'''
 
+import cli
+
 from .git_utils import *
 from .graphs import plot_graphs
 from .main import analyse_repository
