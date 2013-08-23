@@ -35,8 +35,8 @@ def get_project_variables(project_path):
     ratios = file_ratio_data[1:]
     ratios.sort(key=lambda x: x[headers.index('ratio')])
     ratios = [dict(zip(headers, row)) for row in ratios]
-    variables['best_files_tag'] = tag[0]['name']
-    variables['worst_files_tag'] = tag[0]['name']
+    variables['best_files_tag'] = tags[0]['name']
+    variables['worst_files_tag'] = tags[0]['name']
     variables['best_files'] = ratios[:10]
     variables['worst_files'] = ratios[-10:]
     variables['ratios'] = ratios
