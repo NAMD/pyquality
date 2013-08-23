@@ -10,15 +10,15 @@
             list-style: none;
         }
 
+        table {
+            border-collapse: collapse;
+        }
+
         th {
             padding: 10px;
         }
 
-        table.ratios {
-            border-collapse: collapse;
-        }
-
-        table.ratios th, table.ratios td {
+        th, td {
             border: 1px solid #CCC;
             text-align: center;
             padding: 1em;
@@ -52,7 +52,7 @@
 
     <h2><a name="section-top10best">Top 10 best files</a></h2>
 
-    <table class="ratios">
+    <table>
       <tr><th>Filename</th><th>Total lines</th><th>Lines with warnings</th><th>% of lines with warnings</th></tr>
       {% for file in best_files %}
       <tr><td>{{ file.filename }}</td><td>{{ file.total_lines}}</td><td>{{ file.lines_with_errors }}</td><td>{{ '%0.2f'|format(file.ratio|float * 100) }}</tr>
@@ -62,7 +62,7 @@
 
     <h2><a name="section-top10worst">Top 10 worst files</a></h2>
 
-    <table class="ratios">
+    <table>
       <tr><th>Filename</th><th>Total lines</th><th>Lines with warnings</th><th>% of lines with warnings</th></tr>
       {% for file in worst_files %}
       <tr><td>{{ file.filename }}</td><td>{{ file.total_lines}}</td><td>{{ file.lines_with_errors }}</td><td>{{ '%0.2f'|format(file.ratio|float * 100) }}</tr>
@@ -100,7 +100,7 @@
 
     <h2><a name="section-ratioperfile">Ratio per file</a></h2>
 
-    <table class="ratios">
+    <table>
       <tr><th>Filename</th><th>Total lines</th><th>Lines with warnings</th><th>% of lines with warnings</th></tr>
       {% for file in ratios|reverse %}
       <tr><td>{{ file.filename }}</td><td>{{ file.total_lines}}</td><td>{{ file.lines_with_errors }}</td><td>{{ '%0.2f'|format(file.ratio|float * 100) }}</tr>
