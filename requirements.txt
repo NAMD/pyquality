@@ -1,6 +1,6 @@
 flake8
 numpy
 requests
-matplotlib
+matplotlib>=1.3.0
 strobo
 jinja2
