@@ -39,7 +39,7 @@ def main():
     pyquality.plot_graphs(repository_name, tags_filename, ratios_filename,
                           graph_filename)
 
-    video_filename = path_join(results_path, repository_name)
+    video_filename = path_join(results_path, repository_name) + '.ogv'
     pyquality.render_project_history(repository_name, video_filename,
                                      tags_filename, results_path)
 
