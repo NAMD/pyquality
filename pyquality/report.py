@@ -35,7 +35,7 @@ def get_project_variables(project_name, tags_filename, ratios_filename,
     variables['best_files_tag'] = tags[0]['name']
     variables['worst_files_tag'] = tags[0]['name']
     variables['best_files'] = ratios[:10]
-    variables['worst_files'] = ratios[-10:]
+    variables['worst_files'] = reversed(ratios[-10:])
     variables['ratios'] = ratios
     variables['video_filename'] = os.path.basename(video_filename)
 
