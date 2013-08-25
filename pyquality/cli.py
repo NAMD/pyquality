@@ -20,6 +20,8 @@ def main():
     if not os.path.exists(repository):
         repository_path = os.path.basename(repository).replace('.git', '')
         pyquality.git_clone(repository, repository_path)
+    else:
+        repository_path = os.path.normpath(repository_path)
     repository_name = os.path.basename(repository_path)
 
     results_path = path_join(os.path.curdir,
