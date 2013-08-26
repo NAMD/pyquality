@@ -13,6 +13,13 @@ from .git_utils import *
 
 
 def pep8(filename):
+    ''' Return PEP8-related information for a filename
+
+    Returned data: number of total lines, number of lines with errors/warnings
+                   and total number of errors/warnings (could be more than one
+                   per line).
+    '''
+
     old_stdout = sys.stdout
     temp_file = tempfile.NamedTemporaryFile()
     sys.stdout = temp_file
@@ -34,6 +41,7 @@ def pep8(filename):
 
     except Exception as exc:
         return exc
+        # TODO: why *return* an exception if we can simply *raise* it?
 
     finally:
         sys.stdout = old_stdout
@@ -43,6 +51,8 @@ def pep8(filename):
 
 
 def pep8_dir(path):
+    ''' Run `pep8` for all `.py` files in a directory, recursively '''
+
     results = {}
     for root, dirs, files in os.walk(path):
         for file_ in fnmatch.filter(files, '*.py'):
@@ -52,10 +62,10 @@ def pep8_dir(path):
 
             if isinstance(result, Exception):
                 import traceback
-                sys.stderr.write("Error while running flake8 for '{}'.\n".format(
-                    full_path))
+                sys.stderr.write("Error while running flake8 for '{}'.\n"
+                                 .format(full_path))
                 sys.stderr.write("\t{}: {}\n".format(result.__class__.__name__,
-                    result.message))
+                        result.message))
                 return None
 
             results[full_path] = result
@@ -75,7 +85,18 @@ def summarize_results(results):
     return data
 
 def analyse_repository(repository_path, tags_filename, ratios_filename):
-    tags = [git_current_branch(repository_path)] + git_tag_list(repository_path)
+    ''' Create CSVs with information about repository history
+
+    This function will create a "tags" CSV file with information about all tags
+    in the repository and also for each tag a CSV with pep8 data for the files
+    in that tag.
+    '''
+
+    original_branch = git_current_branch(repository_path)
+    tags = [original_branch] + git_tag_list(repository_path)
+
+    # TODO: maybe we should use 'git stash save -u' before doing everything
+    #       and after anaylsing the repository, 'git stash pop'
 
     tags_info_csv = csv.writer(open(tags_filename, 'w'))
     tags_info_csv.writerow(('tag_name', 'date', 'authors', 'commits'))
@@ -111,4 +132,4 @@ def analyse_repository(repository_path, tags_filename, ratios_filename):
                        data['lines_without_errors'], ratio)
                 csv_writer.writerow(row)
 
-    git_checkout(repository_path, tags[0]) # returns to the branch we found the repo in
+    git_checkout(repository_path, original_branch)
