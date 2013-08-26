@@ -92,6 +92,8 @@ def analyse_repository(repository_path, tags_filename, ratios_filename):
     in that tag.
     '''
 
+    # TODO: do not expose git commands output on stdout!
+
     original_branch = git_current_branch(repository_path)
     tags = [original_branch] + git_tag_list(repository_path)
 
