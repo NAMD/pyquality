@@ -3,9 +3,7 @@
 import csv
 import dateutil.parser
 import fnmatch
-import glob
 import os
-import shutil
 import sys
 import tempfile
 
